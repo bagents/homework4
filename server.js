@@ -1,6 +1,9 @@
 const Express = require('express');
 const Mongoose = require('mongoose');
 const BodyParser = require('body-parser');
+const Router = require('./middleware/crudService');
+
+const DbService = require('./database/dbService');
 
 const user = require('./database/models/user');
 
@@ -9,9 +12,9 @@ const ErrorHandler = require('./middleware/errorHandler');
 const app = Express();
 app.use(BodyParser.json());
 
-app.get('', (request, response) => {
-  response.send('Hello');
-});
+const myModel = { model: user };
+
+app.use(Router(new DbService(myModel)));
 
 app.use(ErrorHandler);
 
