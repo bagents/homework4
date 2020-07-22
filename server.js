@@ -1,21 +1,18 @@
-const Express = require('express');
+const app = require('express')();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 const Mongoose = require('mongoose');
 const BodyParser = require('body-parser');
 const Router = require('./middleware/crudService');
-
+const ErrorHandler = require('./middleware/errorHandler');
 const DbService = require('./database/dbService');
-
 const user = require('./database/models/user');
 
-const ErrorHandler = require('./middleware/errorHandler');
-
-const app = Express();
-app.use(BodyParser.json());
-
 const myModel = { model: user };
+const port = 8080;
 
+app.use(BodyParser.json());
 app.use(Router(new DbService(myModel)));
-
 app.use(ErrorHandler);
 
 (async () => {
@@ -25,5 +22,7 @@ app.use(ErrorHandler);
     useFindAndModify: false,
     useCreateIndex: true,
   });
-  app.listen(8080);
+  http.listen(port, () => {
+    console.log(`listening on *:${port}`);
+  });
 })();
